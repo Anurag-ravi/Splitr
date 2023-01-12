@@ -39,6 +39,7 @@ dependencies:
   appwrite: ^8.2.0
   shared_preferences: ^2.0.15
   http: ^0.13.5
+  otp_text_field: ^1.1.3
 
 dev_dependencies:
   flutter_test:

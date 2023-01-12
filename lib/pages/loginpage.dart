@@ -9,22 +9,20 @@ import 'package:splitr/config/colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:splitr/models/usermodel.dart';
 import 'package:splitr/pages/otppage.dart';
+import 'package:splitr/pages/signuppage.dart';
 import 'package:splitr/utilities/data.dart';
 import 'package:splitr/utilities/functions.dart';
 
-class SignupPage extends StatefulWidget {
-  const SignupPage({super.key});
+class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
 
   @override
-  State<SignupPage> createState() => _SignupPageState();
+  State<LoginPage> createState() => _LoginPageState();
 }
 
-class _SignupPageState extends State<SignupPage> {
+class _LoginPageState extends State<LoginPage> {
   TextEditingController emailController = TextEditingController();
-  TextEditingController phoneController = TextEditingController();
-  TextEditingController upiController = TextEditingController();
-  TextEditingController nameController = TextEditingController();
-  String email = "", phone = "", name = "", upi = "";
+  String email = "";
   @override
   Widget build(BuildContext context) {
     double deviceHeight = MediaQuery.of(context).size.height;
@@ -59,20 +57,7 @@ class _SignupPageState extends State<SignupPage> {
           SizedBox(
             height: deviceHeight * 0.025,
           ),
-          InputText(controller: nameController, variable: name, name: "Name"),
-          SizedBox(
-            height: deviceHeight * 0.015,
-          ),
           InputText(controller: emailController, variable: email, name: "Email"),
-          SizedBox(
-            height: deviceHeight * 0.015,
-          ),
-          InputText(
-              controller: phoneController, variable: phone, name: "Phone Number"),
-          SizedBox(
-            height: deviceHeight * 0.015,
-          ),
-          InputText(controller: upiController, variable: upi, name: "UPI ID"),
           SizedBox(
             height: deviceHeight * 0.025,
           ),
@@ -89,7 +74,7 @@ class _SignupPageState extends State<SignupPage> {
               ),
               child: Center(
                 child: Text(
-                  'Sign up',
+                  'Log in',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: deviceWidth * .040,
@@ -114,15 +99,22 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Already have an account? ",
+                      "Don't have an account? ",
                       style: TextStyle(
                         fontSize: deviceWidth * .040,
                       ),
                     ),
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => SignupPage(),
+                          ),
+                        );
+                      },
                       child: Text(
-                        'Sign in',
+                        'Sign up',
                         style: TextStyle(
                           color: getPrimary(context),
                           fontSize: deviceWidth * .040,
@@ -196,7 +188,7 @@ class _SignupPageState extends State<SignupPage> {
                         width: 10,
                       ),
                       Text(
-                        'Sign up with Google',
+                        'Sign in with Google',
                         style: TextStyle(
                           fontSize: deviceWidth * .040,
                           color: Colors.black,
@@ -213,23 +205,17 @@ class _SignupPageState extends State<SignupPage> {
         ));
   }
   signup() async {
-    String name = nameController.text;
     String email = emailController.text;
-    String phone = phoneController.text;
-    String upi = upiController.text;
     FocusManager.instance.primaryFocus?.unfocus();
-    if (isValidEmail(email) && isValidPhone(phone) && isValidUpi(upi)) {
+    if (isValidEmail(email)) {
       final response = await http.post(
-        Uri.parse("$baseUrl/auth/register"),
+        Uri.parse("$baseUrl/auth/login"),
         headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
         },
         body: jsonEncode({
-          "name": name,
-          "phone": phone,
           "email": email,
-          "upi_id": upi,
         })
       );
       Map<String, dynamic> data = jsonDecode(response.body);
@@ -250,10 +236,4 @@ class _SignupPageState extends State<SignupPage> {
               r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$')
           .hasMatch(email);
     }
-  bool isValidPhone(String phone) {
-      return RegExp(r'^[0-9]{10}$').hasMatch(phone);
-  }
-  bool isValidUpi(String upi) {
-      return RegExp(r'([a-zA-Z0-9.-]{2,256}[@][a-zA-Z]{2,64})').hasMatch(upi);
-  }
 }
